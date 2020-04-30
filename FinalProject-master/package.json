@@ -5,9 +5,11 @@
   "dependencies": {
     "axios": "^0.19.2",
     "babel-loader": "^8.0.6",
-    "bootstrap": "^4.3.1",
+    "base64-to-image": "^1.0.2",
+    "bootstrap": "^4.4.1",
     "face-api.js": "^0.21.0",
     "react": "^16.10.2",
+    "react-bootstrap": "^1.0.1",
     "react-dom": "^16.10.2",
     "react-router": "^3.2.4",
     "react-scripts": "3.2.0",

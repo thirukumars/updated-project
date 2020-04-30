@@ -5,13 +5,15 @@ import App from "./App";
 import { Router, Route, hashHistory, IndexRedirect } from "react-router";
 import Camera from "./components/Camera.js";
 import Capture from "./components/capture";
+import Detail from "./components/Detail/Detail.js";
 
 import * as serviceWorker from "./serviceWorker";
 
 // ReactDOM.render(<App />, document.getElementById('root'));
 ReactDOM.render(
 	<Router history={hashHistory}>
-		<Route path="/" component={App} />
+		<Route path="/" component={Detail} />
+		<Route path="Home" component={App} />
 		<Route path="First" component={Capture} />
 		<Route path="Second" component={Camera} />
 	</Router>,

@@ -3,20 +3,24 @@ import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
 import { browserHistory } from "react-router";
 import axios from "axios";
+// const MODEL_URL = "/models";
 
 var name = "";
+var nameArray = [];
+
 const videoConstraints = {
 	width: 350,
 	height: 350,
 	facingMode: "user"
 };
 
-export default class WebCamPicure extends Component {
+class WebCamPicure extends Component {
 	constructor() {
 		super();
 		this.state = {
 			takingPicture: false,
-			selectedFile: null
+			selectedFile: null,
+			name: ["praveen"]
 		};
 		this.image = null;
 		this.webcam = React.createRef();
@@ -24,6 +28,13 @@ export default class WebCamPicure extends Component {
 		this.canvasPicWebCam = React.createRef();
 		this.fileUploadHandler = this.fileUploadHandler.bind(this);
 	}
+	// componentDidMount() {
+	// 	this.loadModels();
+	// }
+	// loadModels() {
+	// 	// faceapi.loadFaceDetectionModel(MODEL_URL);
+	// 	faceapi.loadSsdMobilenetv1Model(MODEL_URL);
+	// }
 	OnSecond = () => {
 		var AppUrl = "/#Second";
 		browserHistory.push(AppUrl);
@@ -43,10 +54,10 @@ export default class WebCamPicure extends Component {
 		var image = new Image();
 		image.onload = async () => {
 			ctx.drawImage(image, 0, 0);
-			//   await this.getFullFaceDescription(this.canvasPicWebCam.current);
-			await faceapi
-				.detectAllFaces(this.canvasPicWebCam.current)
-				.withFaceLandmarks();
+			// await faceapi.getFullFaceDescription(this.canvasPicWebCam.current);
+			// await faceapi
+			// 	.detectAllFaces(this.canvasPicWebCam.current)
+			// 	.withFaceLandmarks();
 
 			//   this.drawDescription(this.canvasPicWebCam.current);
 		};
@@ -65,21 +76,56 @@ export default class WebCamPicure extends Component {
 		// filename.setAttribute("download","file"+"praveen"+".png");
 		// console.log(filename)
 	}
+
 	fileSelectedHandler = (event) => {
-		console.log(event.target.files[0]);
+		console.log(event.target.files[0].name);
+
+		var temp = event.target.files[0].name;
+		console.log(temp);
+		var str = "";
+		for (let i of temp) {
+			if (i != ".") {
+				str += i;
+			} else {
+				break;
+			}
+		}
+		nameArray.push(str);
 		this.setState({
-			selectedFile: event.target.files[0]
+			selectedFile: event.target.files[0],
+			name: nameArray
 		});
+		axios
+			.post("/nameArray", this.state.name)
+			.then((res) => {
+				console.log("uploaded succesfully");
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
-	fileUploadHandler = () => {
+	fileUploadHandler = (e) => {
+		console.log(this.state.name);
+		e.preventDefault();
 		const fd = new FormData();
-		fd.append("image", this.state.selectedFile, this.state.selectedFile.name);
-		fetch("http://localhost:5000/upload", {
-			method: "POST",
-			headers: { "Content-Type": "multipart/form-data" },
-			mode: "no-cors",
-			body: fd
-		});
+		fd.append("myImage", this.state.selectedFile);
+		// fetch("http://localhost:5000/upload", {
+		// 	method: "POST",
+		// 	headers: { "Content-Type": "multipart/form-data" },
+		// 	mode: "no-cors",
+		// 	body: fd
+		// });
+		const config = {
+			headers: {
+				"content-type": "multipart/form-data"
+			}
+		};
+		axios
+			.post("/upload", fd, config)
+			.then((response) => {
+				alert("The file is successfully uploaded");
+			})
+			.catch((error) => {});
 
 		// const fd = new FormData();
 		// fd.append("image", this.state.selectedFile, this.state.selectedFile.name);
@@ -137,10 +183,18 @@ export default class WebCamPicure extends Component {
 				</a>
 				<button onClick={this.OnSecond}>Recognization</button>
 				<div class="upload">
-					<input type="file" onChange={this.fileSelectedHandler} />
-					<button onClick={this.fileUploadHandler}>upload</button>
+					<form onSubmit={this.fileUploadHandler} encType="multipart">
+						<input
+							type="file"
+							name="myImage"
+							accept="image/*"
+							onChange={this.fileSelectedHandler}
+						/>
+						<button type="submit">upload</button>
+					</form>
 				</div>
 			</div>
 		);
 	}
 }
+export default WebCamPicure;

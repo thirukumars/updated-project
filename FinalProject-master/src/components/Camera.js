@@ -2,22 +2,26 @@ import React, { Component, Fragment } from "react";
 import * as faceapi from "face-api.js";
 import { browserHistory } from "react-router";
 import MappingComponent from "./MappingComponent";
+// import base64ToImage from "base64-to-image";
+// import nameArray from './capture';
 //axios
 import axios from "axios";
 
 // import Mycomponent from "./Mycomponent";
 import "bootstrap/dist/css/bootstrap.min.css";
 const MODEL_URL = "/models";
+const ImgList = "/img";
 var labeledFaceDescriptors;
 var counter = 0;
 var max = 0;
 var FinalExpression = [];
+var uploadName = [];
 var Average_expression = "";
 var dummy = "praveen";
 // var res = [];
 var expression = "";
 var no_of_times = 0;
-// var nameArray = [];
+var nameArray1 = [];
 var expressionArray = [];
 // var iotArray = [];
 // var inputArray = [];
@@ -29,10 +33,14 @@ var map = new Map();
 var l;
 var key = [];
 var value = [];
-// var detectedFace;
+var imgback;
+var imgTagback;
+var detectedFace;
+var testImage;
 class Camera extends Component {
 	constructor(props) {
 		super(props);
+
 		this.videoTag = React.createRef();
 
 		this.state = {
@@ -40,7 +48,7 @@ class Camera extends Component {
 			video: null,
 			disabled: false,
 			detectedFace: null,
-			enabled: true
+			enabled: true,
 		};
 
 		this.stop = this.stop.bind(this);
@@ -55,13 +63,31 @@ class Camera extends Component {
 		window.location.reload();
 	};
 	componentDidMount() {
-		// fetch("/api/customers")
-		// 	.then((res) => res.json())
-		// 	.then((customer) => console.log(customer));
+		// fetch("/nameArray")
+		// 	.then((res) => console.log(res.json()))
+		// 	.then((nameArray) => console.log(nameArray));
 		// handleSubmit(event){
 		// 	event.preventDefault();
 
 		// };
+		axios.get("/nameArray").then((res) => {
+			let nameArray2 = res.data;
+			console.log(res.data);
+			for (let i in nameArray2) {
+				nameArray1[i] = nameArray2[i].name;
+				console.log(nameArray1[i].name);
+			}
+			for (let i in nameArray1) {
+				// nameArray1[i] = nameArray2[i].name;
+				console.log(nameArray1[i]);
+			}
+		});
+
+		axios.get("/image").then((res) => {
+			testImage = res.data;
+			// console.log("from image" + res.data);
+			imgback = <img src={`data:image/jpeg;base64,${res.data}`} />;
+		});
 
 		// getting access to webcam
 		navigator.mediaDevices
@@ -105,13 +131,15 @@ class Camera extends Component {
 			canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
 			//Label Images
 			var dummy = ["praveen", "vikranth", "Gokul", "Rahul"];
-			const labels = dummy;
+			const labels = nameArray1;
+			// const labels = ["praveen", "vikranth", "Gokul", "Rahul"];
 			if (no_of_times <= 0) {
 				if (no_of_times === 0) {
 					labeledFaceDescriptors = await Promise.all(
 						labels.map(async (label) => {
 							// fetch image data from urls and convert blob to HTMLImage element
-							const imgUrl = `/img/${label}.png`;
+							const imgUrl = `/img/${label}.png`; // for testing purpose
+							// const imgUrl = testImage;
 							const img = await faceapi.fetchImage(imgUrl);
 							const fullFaceDescription = await faceapi
 								.detectSingleFace(img)
@@ -211,20 +239,21 @@ class Camera extends Component {
 		// document.getElementById("sumbitted").disabled = false; this is used when the sumbit button is used********
 		this.setState({ enabled: false });
 		this.setState({ disabled: true });
+		imgTagback = imgback;
 	}
 	formsubmit() {
 		fetch("/", {
 			method: "POST",
 			headers: {
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
 				user: {
 					expression_Array: FinalExpression,
 					names_Array: key,
-					Average_expression: Average_expression
-				}
-			})
+					Average_expression: Average_expression,
+				},
+			}),
 		});
 		// const user = {
 		// 	expression_Array: FinalExpression,
@@ -299,6 +328,7 @@ class Camera extends Component {
 			}
 			this.formsubmit();
 			//This will assign the key and value to the {MappingComponent.js}
+
 			l = key.map((e, i) => (
 				<MappingComponent
 					key={Math.random()}
@@ -342,7 +372,7 @@ class Camera extends Component {
 						disabled={this.state.disabled}
 						style={{
 							color: "white",
-							fontStyle: "bold"
+							fontStyle: "bold",
 						}}
 					>
 						Start
@@ -354,7 +384,7 @@ class Camera extends Component {
 						disabled={this.state.enabled}
 						style={{
 							marginLeft: "15px",
-							color: "white"
+							color: "white",
 						}}
 					>
 						Stop
@@ -364,6 +394,7 @@ class Camera extends Component {
 					{/* this is the place where the l's element render */}
 
 					{l}
+					{imgTagback}
 				</div>
 			</Fragment>
 		);

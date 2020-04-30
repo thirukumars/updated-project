@@ -1,0 +1,10 @@
+.subContent {
+	margin: 0 auto;
+	padding: 100px;
+}
+.main {
+	text-align: center;
+	height: 100vh;
+	width: auto;
+	background-color: #a1fc03;
+}
