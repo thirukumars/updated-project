@@ -101,14 +101,14 @@ app.get("/image", (req, res) => {
 			// var imageName = "public/images/map.png";
 
 			// fs.createWriteStream(imageName).write(imageBuffer);
-			var BlOBImage = row[0].image;
-			res.send(BlOBImage);
-			// var buffer = new Buffer(row[0].image, "binary");
-			// var bufferBase64 = buffer.toString("base64");
+			// var BlOBImage = row[0].image;
+			// res.send(BlOBImage);
+			var buffer = new Buffer(row[0].image, "binary");
+			var bufferBase64 = buffer.toString("base64");
 			// const imageDisplay = ({ bufferBase64 }) => (
 			// 	<img src={`data:image/jpeg;base64,${bufferBase64}`} />
 			// );
-			// res.send(bufferBase64);
+			res.send(bufferBase64);
 			// res.sendFile(path.resolve(__dirname, "./public/uploads/boobal.jpg")); //it will display the image in path
 			// res.send(imageDisplay);
 
@@ -160,7 +160,7 @@ app.get("/nameArray", function (req, res) {
 // app.use(express.urlencoded());
 
 // Access the parse results as request.body
-app.post("/", function (request, response) {
+app.post("/finalExpression", function (request, response) {
 	var name_Array = request.body.user.names_Array;
 	var expression_Array = request.body.user.expression_Array;
 	var Average_expression = request.body.user.Average_expression;
@@ -168,8 +168,8 @@ app.post("/", function (request, response) {
 	console.log(request.body.user.expression_Array);
 	for (let i = 0; i < name_Array.length; i++) {
 		var query =
-			"INSERT INTO individual_result (`name`, `expression`, `image`) VALUES (?)";
-		var values = [[name_Array[i], expression_Array[i], "image" + i]];
+			"INSERT INTO individual_result (`name`, `expression`) VALUES (?)";
+		var values = [[name_Array[i], expression_Array[i]]];
 		connection.query(query, values, (err, result) => {
 			if (err) {
 				console.log(err);
@@ -189,6 +189,55 @@ app.post("/", function (request, response) {
 			);
 		}
 	});
+});
+app.get("/finalExpression", function (request, response) {
+	var names;
+	connection.query("SELECT * FROM individual_result", (error, row, fields) => {
+		if (!!error) {
+			console.log("Error in the query");
+		} else {
+			console.log("seccessful query");
+			console.log(row.length);
+			response.send(row);
+		}
+	});
+});
+
+app.get("/overall_expression", function (request, response) {
+	var names;
+	connection.query("SELECT * FROM overall_expression", (error, row, fields) => {
+		if (!!error) {
+			console.log("Error in the query");
+		} else {
+			console.log("seccessful query");
+			console.log(row.length);
+			console.log(row[row.length - 1]);
+			response.send(row[row.length - 1]);
+		}
+	});
+});
+
+app.post("/detail", function (req, res) {
+	staffName = req.body;
+	console.log(staffName);
+});
+
+app.get("/date", function (req, res) {
+	let date1 = "09 - 03 - 2020";
+	let date2 = "16 - 05 - 2020";
+	connection.query(
+		`SELECT * FROM individual_result WHERE time BETWEEN ${date1} and ${date2}`,
+		(error, row, fields, data) => {
+			if (!!error) {
+				console.log("Error in the query");
+			} else {
+				console.log("seccessful query");
+				console.log(row);
+				console.log(data);
+				res.send(row);
+			}
+		}
+	);
 });
 const port = 5000;
 app.listen(port, () => {

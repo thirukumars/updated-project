@@ -8,6 +8,7 @@ import {
 	ControlLabel,
 	Button,
 } from "react-bootstrap";
+var class_Name = "";
 export default class Detail extends Component {
 	// constructor(){
 	//     this.props()
@@ -17,6 +18,11 @@ export default class Detail extends Component {
 		browserHistory.push(AppUrl);
 		window.location.reload();
 	};
+	events(e) {
+		class_Name = e.target.value;
+		console.log(e.target.value);
+		console.log(class_Name);
+	}
 	render() {
 		return (
 			<div className="main">
@@ -24,17 +30,34 @@ export default class Detail extends Component {
 				<div className="subContent">
 					<Form onSubmit={this.OnHome}>
 						<Form.Group controlId="formBasicEmail">
-							<Form.Label>Class Name</Form.Label>
-							<Form.Control type="text" placeholder="Class Name" />
+							<Form.Label>Staff Name</Form.Label>
+							<Form.Control
+								name="staffName"
+								type="text"
+								placeholder="Staff Name"
+								onChange={this.events}
+							/>
 						</Form.Group>
 
 						<Form.Group controlId="formBasicPassword">
-							<Form.Label></Form.Label>
-							<Form.Control type="password" placeholder="Password" />
+							<Form.Label>Subject</Form.Label>
+							<Form.Control type="text" placeholder="subject" name="subject" />
 						</Form.Group>
-						<Form.Group controlId="formBasicCheckbox">
-							<Form.Check type="checkbox" label="Check me out" />
+
+						<Form.Group controlId="formBasicPassword">
+							<Form.Label>Department</Form.Label>
+							<Form.Control
+								type="text"
+								placeholder="Department"
+								name="Department"
+							/>
 						</Form.Group>
+
+						<Form.Group controlId="formBasicPassword">
+							<Form.Label>Batch</Form.Label>
+							<Form.Control type="text" placeholder="Batch" name="batch" />
+						</Form.Group>
+
 						<Button variant="primary" type="submit">
 							Submit
 						</Button>

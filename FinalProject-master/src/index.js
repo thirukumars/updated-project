@@ -3,9 +3,10 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import { Router, Route, hashHistory, IndexRedirect } from "react-router";
-import Camera from "./components/Camera.js";
-import Capture from "./components/capture";
+import Camera from "./components/camera/Camera.js";
+import Capture from "./components/capture/capture";
 import Detail from "./components/Detail/Detail.js";
+import Result from "./components/Result/Result.js";
 
 import * as serviceWorker from "./serviceWorker";
 
@@ -16,6 +17,7 @@ ReactDOM.render(
 		<Route path="Home" component={App} />
 		<Route path="First" component={Capture} />
 		<Route path="Second" component={Camera} />
+		<Route path="Result" component={Result} />
 	</Router>,
 	document.getElementById("root")
 );
